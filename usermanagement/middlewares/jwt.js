@@ -10,7 +10,8 @@ exports.checkjwttoken = function(req,res,next){
       if(err){
         return res.json({
           success: false,
-          message: "Token is not valid."
+          message: "Token is not valid.",
+          return_status: "invalid_access_token"
         });
       }else{
         req.jwtdecoded = decoded;
@@ -20,7 +21,8 @@ exports.checkjwttoken = function(req,res,next){
   } else{
     return res.json({
       success: false,
-      message: "Auth token is not supplied."
+      message: "Auth token is not supplied.",
+      return_status: "missing_auth_token"
     })
   }
 };
@@ -29,31 +31,35 @@ exports.login = function(req,res){
   let username = req.body.username;
   let password = req.body.password;
 
-  usermodel.findOne({username: username, password: password},function(err,user){
+  usermodel.findOne({username: username, password: password, active: true},function(err,user){
     if(err){
+      err.return_status = "error";
       res.json(err);
     } else if (user === null){
       res.json({
-        message: "Invalid credentials.",
-        data: req.body
+        message: "Invalid credentials or inactive account.",
+        data: req.body,
+        return_status: "error"
       });
     }else{
       user.is_logged_in = true;
-      let token = jwt.sign({username: username},
+      let token = jwt.sign({username: user.username, is_admin:user.is_admin, id:user._id},
         config.jwtsecretkey,
         {
-          expiresIn: '1m'
+          expiresIn: '30m'
         }
       );
 
       user.save(function(err){
         if(err){
+          err.return_status = "error";
           res.json(err);
         }else{
           res.json({
             message:"Log in Succesfull.",
             data: user,
-            token: token
+            token: token,
+            return_status: "ok"
           });
         }
       });

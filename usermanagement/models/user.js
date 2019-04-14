@@ -16,6 +16,11 @@ var userSchema = mongoose.Schema({
   is_admin: {
     type: Boolean,
     required: false
+  },
+  active: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 },{collection: 'user'});
 

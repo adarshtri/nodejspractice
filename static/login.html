@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>KPL</title>
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+    <!--Import materialize.css-->
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript"
+            src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
+
+    <style>
+
+        html { 
+            background: url(images/bet.jpg) no-repeat center center fixed; 
+            -webkit-background-size: cover;
+            -moz-background-size: cover;
+            -o-background-size: cover;
+            background-size: cover;
+            }
+
+        .concise{
+            display:inline-block
+        }
+        .margin-40{
+            margin-top:10rem
+        }
+    </style>
+</head>
+
+<body style="display: flex;
+     min-height: 100vh;
+     flex-direction: column;">
+
+<header >
+
+    <h2 class="center white-text" style="margin-top:0; margin-bottom: 10; padding:10px">Kirusa Premier League</h2>
+
+</header>
+<main style="flex: 1 0 auto;">
+
+    <div class="center-align margin-40">
+
+        <div class="card row concise" style="opacity: .75;">
+            <div class="col s12">
+                <div class="row">
+                    <div class="input-field col s12" style="opacity: 1">
+                        <input id="login_email_id" type="text" class="validate">
+                        <label for="login_email_id">Email</label>
+                    </div>
+                    <div class="input-field col s12">
+                        <input id="login_password" type="password" class="validate">
+                        <label for="password">Password</label>
+                    </div>
+                    <a class="waves-effect waves-light btn" id="login-button">LOGIN</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="center-align margin-5">
+        <a class="waves-effect waves-light btn modal-trigger" id="new_acc_req_btn" href="#modal1" style="opacity: .75;">Request a new account!</a>
+    </div>
+</main>
+
+<footer class="left">
+
+    <div class="footer-copyright">
+
+            © 2018-2019 Kirusa Inc, All rights reserved.
+            <a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+
+    </div>
+
+</footer>
+
+<div id="modal1" class="modal">
+    <div class="modal-content">
+        <h4>New Account Request</h4>
+        <div class="row">
+            <form class="col s12">
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="new_acc_email" type="email" class="validate">
+                        <label for="new_acc_email">Email</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="new_acc_pwd" type="password" class="validate">
+                        <label for="new_acc_pwd">Password</label>
+                    </div>
+                </div>
+
+
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" id="new_acc_req_send_btn" class="modal-close waves-effect waves-green btn-flat">Request</a>
+    </div>
+</div>
+</body>
+
+<script>
+$(document).ready(function(){
+    $('.modal').modal();
+    $("#login-button").click(function(){
+        login();
+    });
+
+    $('#new_acc_req_send_btn').click(function(){
+        console.log("here");
+        new_acc_req();
+    });
+
+  });
+
+  function new_acc_req(){
+      
+        username = $('#new_acc_email').val();
+        pwd = $('#new_acc_pwd').val();
+
+        jQuery
+								.ajax({
+									type : "POST",
+									url : "/newaccreq",
+									data : {
+										username : username,
+										password : pwd
+									},
+									success : function(data) {
+
+										if (data.return_status == "ok") {
+                                            Materialize.toast(
+                                                data.message, 5000, 'rounded'
+                                            );
+                                            
+                                        } else if(data.return_status == "error"){
+                                            Materialize.toast(
+                                                data.message, 5000, 'rounded'
+                                            );
+                                        } else {
+
+                                            Materialize.toast(
+                                                "Something went wrong.", 5000, 'rounded'
+                                            );
+                                        }
+
+									},
+									error : function(jqXHR, textStatus,
+											errorThrown) {
+
+										console.log(textStatus);
+									}
+								});
+
+
+
+  }
+
+  function login(){
+
+    email=$("#login_email_id").val();
+    pwd=$("#login_password").val();
+    jQuery
+								.ajax({
+									type : "POST",
+									url : "/login",
+									data : {
+										username : email,
+										password : pwd
+									},
+									success : function(data) {
+
+										if (data.return_status == "ok") {
+                                            Materialize.toast(
+                                                data.message, 5000, 'rounded'
+                                            );
+                                            Cookies.set("access_token",data.token);
+                                            Cookies.set("user_info", data.data);
+                                            window.location.assign("/dashboard.html");
+                                        } else if(data.return_status == "error"){
+                                            Materialize.toast(
+                                                data.message, 5000, 'rounded'
+                                            );
+                                        } else {
+
+                                            Materialize.toast(
+                                                "Something went wrong.", 5000, 'rounded'
+                                            );
+                                        }
+
+									},
+									error : function(jqXHR, textStatus,
+											errorThrown) {
+
+										console.log(textStatus);
+									}
+								});
+
+  }
+
+</script>
+
+</html>

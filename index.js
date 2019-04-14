@@ -17,6 +17,9 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
+// static files
+app.use(express.static('static'));
+
 // import api routes
 let userroutes = require('./usermanagement/routers/router');
 app.use('/', userroutes);
